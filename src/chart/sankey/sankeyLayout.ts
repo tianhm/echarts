@@ -57,8 +57,9 @@ export default function sankeyLayout(ecModel: GlobalModel, api: ExtensionAPI) {
         const orient = seriesModel.get('orient');
 
         const nodeAlign = seriesModel.get('nodeAlign');
+        const sortNodes = seriesModel.get('sortNodes');
 
-        layoutSankey(nodes, edges, nodeWidth, nodeGap, width, height, iterations, orient, nodeAlign);
+        layoutSankey(nodes, edges, nodeWidth, nodeGap, width, height, iterations, orient, nodeAlign, sortNodes);
     });
 }
 
@@ -71,10 +72,11 @@ function layoutSankey(
     height: number,
     iterations: number,
     orient: LayoutOrient,
-    nodeAlign: SankeySeriesOption['nodeAlign']
+    nodeAlign: SankeySeriesOption['nodeAlign'],
+    sortNodes: boolean
 ) {
     computeNodeBreadths(nodes, edges, nodeWidth, width, height, orient, nodeAlign);
-    computeNodeDepths(nodes, edges, height, width, nodeGap, iterations, orient);
+    computeNodeDepths(nodes, edges, height, width, nodeGap, iterations, orient, sortNodes);
     computeEdgeDepths(nodes, orient);
 }
 
@@ -257,6 +259,7 @@ function scaleNodeBreadths(nodes: GraphNode[], kx: number, orient: LayoutOrient)
  * @param nodeGap  the vertical distance between two nodes
  *     in the same column.
  * @param iterations  the number of iterations for the algorithm
+ * @param sortNodes  whether to sort the nodes by y-position
  */
 function computeNodeDepths(
     nodes: GraphNode[],
@@ -265,21 +268,22 @@ function computeNodeDepths(
     width: number,
     nodeGap: number,
     iterations: number,
-    orient: LayoutOrient
+    orient: LayoutOrient,
+    sortNodes: boolean
 ) {
     const nodesByBreadth = prepareNodesByBreadth(nodes, orient);
 
     initializeNodeDepth(nodesByBreadth, edges, height, width, nodeGap, orient);
-    resolveCollisions(nodesByBreadth, nodeGap, height, width, orient);
+    resolveCollisions(nodesByBreadth, nodeGap, height, width, orient, sortNodes);
 
     for (let alpha = 1; iterations > 0; iterations--) {
         // 0.99 is a experience parameter, ensure that each iterations of
         // changes as small as possible.
         alpha *= 0.99;
         relaxRightToLeft(nodesByBreadth, alpha, orient);
-        resolveCollisions(nodesByBreadth, nodeGap, height, width, orient);
+        resolveCollisions(nodesByBreadth, nodeGap, height, width, orient, sortNodes);
         relaxLeftToRight(nodesByBreadth, alpha, orient);
-        resolveCollisions(nodesByBreadth, nodeGap, height, width, orient);
+        resolveCollisions(nodesByBreadth, nodeGap, height, width, orient, sortNodes);
     }
 }
 
@@ -355,13 +359,16 @@ function resolveCollisions(
     nodeGap: number,
     height: number,
     width: number,
-    orient: LayoutOrient
+    orient: LayoutOrient,
+    sortNodes: boolean
 ) {
     const keyAttr = orient === 'vertical' ? 'x' : 'y';
     zrUtil.each(nodesByBreadth, function (nodes) {
-        nodes.sort(function (a, b) {
-            return a.getLayout()[keyAttr] - b.getLayout()[keyAttr];
-        });
+        if (sortNodes !== false) {
+            nodes.sort(function (a, b) {
+                return a.getLayout()[keyAttr] - b.getLayout()[keyAttr];
+            });
+        }
         let nodeX;
         let node;
         let dy;
