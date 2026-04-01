@@ -39,7 +39,6 @@ under the License.
         <div id="main1"></div>
         <div id="main2"></div>
         <div id="main3"></div>
-        <div id="main4"></div>
 
 
 
@@ -175,38 +174,6 @@ under the License.
                     chart.on('click', function (params) {
                        console.log(params, params.data);
                     });
-                }
-            });
-        </script>
-
-        <script>
-            require([
-                'echarts',
-                './data/energy.json'
-            ], function (echarts, data) {
-                var option = {
-                    series: [
-                        {
-                            type: 'sankey',
-                            sortNodes: false,
-                            nodeGap: 4,
-                            data: data.nodes,
-                            links: data.links,
-                            lineStyle: {
-                                color: 'gradient',
-                                curveness: 0.5
-                            }
-                        }
-                    ]
-                };
-
-                var chart = testHelper.create(echarts, 'main4', {
-                    title: 'sortNodes: false keeps input node order per depth',
-                    option: option
-                });
-
-                if (chart) {
-                    window.addEventListener('resize', chart.resize);
                 }
             });
         </script>
