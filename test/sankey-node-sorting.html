@@ -61,19 +61,9 @@ under the License.
 				{source: "A-to-C-3", target: "C", value: 9}
             ]
         };
-        let option = {
-            series: [
-                {
-                    type: "sankey",
-                    data: data.nodes,
-                    links: data.links
-                }
-            ]
-        };
-
         const chart0 = testHelper.create(echarts, "main0", {
-            title: "Default behaviour, sortNodes: true, has links crossing over each other",
-			option: {series: [{type: "sankey", data: data.nodes, links: data.links, sortNodes: true}]}
+            title: "Default behaviour, sort: 'desc', has links crossing over each other",
+            option: {series: [{type: "sankey", data: data.nodes, links: data.links, sort: "desc"}]}
         });
         window.addEventListener("resize", chart0.resize);
 
@@ -84,8 +74,8 @@ under the License.
         window.addEventListener("resize", chart1.resize);
 
         const chart2 = testHelper.create(echarts, "main2", {
-            title: "sortNodes: false gives user a chance to sort nodes manually, while still optimising the layout",
-            option: {series: [{type: "sankey", data: data.nodes, links: data.links, sortNodes: false}]}
+            title: "sort: null preserves input node order while still optimising the layout",
+            option: {series: [{type: "sankey", data: data.nodes, links: data.links, sort: null}]}
         });
         window.addEventListener("resize", chart2.resize);
 

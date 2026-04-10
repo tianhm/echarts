@@ -137,10 +137,10 @@ export interface SankeySeriesOption
      */
     layoutIterations?: number
     /**
-     * Whether to sort nodes by current coordinate when resolving collisions.
-     * Set to false to preserve the original node order in each depth column.
+     * Sorting method used when resolving node collisions within each depth column.
+     * Set to null to preserve the original node order.
      */
-    sortNodes?: boolean
+    sort?: 'desc' | null
 
     nodeAlign?: 'justify' | 'left' | 'right'    // TODO justify should be auto
 
@@ -323,7 +323,7 @@ class SankeySeriesModel extends SeriesModel<SankeySeriesOption> {
         draggable: true,
 
         layoutIterations: 32,
-        sortNodes: true,
+        sort: 'desc',
 
         // true | false | 'move' | 'scale', see module:component/helper/RoamController.
         roam: false,
