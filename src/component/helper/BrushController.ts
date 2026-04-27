@@ -72,7 +72,9 @@ export interface BrushCoverConfig {
     panelId?: string;
 
     brushMode?: BrushMode;
-    // `brushStyle`, `transformable` is not mandatory, use DEFAULT_BRUSH_OPT by default.
+    // `brushStyle`, `transformable` is not mandatory. When the controller is enabled,
+    // `updateCovers` inherits from the current brush option first, and then falls back
+    // to `DEFAULT_BRUSH_OPT`.
     brushStyle?: Pick<PathStyleProps, BrushStyleKey>;
     transformable?: boolean;
     removeOnClick?: boolean;
@@ -381,8 +383,9 @@ class BrushController extends Eventful<{
             assert(this._mounted);
         }
 
+        const baseBrushOption = this._brushOption || DEFAULT_BRUSH_OPT;
         coverConfigList = map(coverConfigList, function (coverConfig) {
-            return merge(clone(DEFAULT_BRUSH_OPT), coverConfig, true);
+            return merge(clone(baseBrushOption), coverConfig, true);
         }) as BrushCoverConfig[];
 
         const tmpIdPrefix = '\0-brush-index-';
